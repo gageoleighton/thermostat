@@ -91,8 +91,11 @@ except ImportError:
 #                                                                            #
 ##############################################################################
 
-from w1thermsensor import W1ThermSensor
+#from w1thermsensor import W1ThermSensor
 
+import Adafruit_BMP.BMP085 as BMP085
+
+#BMP085(0x77) # Specify address or nah?
 
 ##############################################################################
 #                                                                            #
@@ -382,7 +385,7 @@ scaleUnits 	  	  = "c" if tempScale == "metric" else "f"
 precipUnits	      = " mm" if tempScale == "metric" else '"'
 precipFactor	  = 1.0 if tempScale == "metric" else 0.0393701
 precipRound 	  = 0 if tempScale == "metric" else 1
-sensorUnits		  = W1ThermSensor.DEGREES_C if tempScale == "metric" else W1ThermSensor.DEGREES_F
+#sensorUnits		  = W1ThermSensor.DEGREES_C if tempScale == "metric" else W1ThermSensor.DEGREES_F
 windFactor		  = 3.6 if tempScale == "metric" else 1.0
 windUnits		  = " km/h" if tempScale == "metric" else " mph"
 
@@ -404,7 +407,7 @@ log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperat
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/scaleUnits", str( scaleUnits ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/precipUnits", str( precipUnits ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/precipFactor", str( precipFactor ), timestamp=False )
-log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/sensorUnits", str( sensorUnits ), timestamp=False )
+#log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/sensorUnits", str( sensorUnits ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/windFactor", str( windFactor ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/windUnits", str( windUnits ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/currentTemp", str( currentTemp ), timestamp=False )
@@ -446,7 +449,7 @@ log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/UISlider
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/UISlider/tempStep", str( tempStep ), timestamp=False )
 
 try:
-	tempSensor = W1ThermSensor()
+	tempSensor = BMP085.BMP085()  # W1ThermSensor()
 except:
 	tempSensor = None
 
@@ -567,9 +570,9 @@ def get_status_string():
 			sched = "Cool"
 	
 		return "[b]System:[/b]\n  " + \
-			   "Heat:     " + ( "[color=00ff00][b]On[/b][/color]" if GPIO.input( heatPin ) else "Off" ) + "\n  " + \
-		       "Cool:      " + ( "[color=00ff00][b]On[/b][/color]" if GPIO.input( coolPin ) else "Off" ) + "\n  " + \
-		       "Fan:       " + ( "[color=00ff00][b]On[/b][/color]" if GPIO.input( fanPin ) else "Auto" ) + "\n  " + \
+			   "Heat:     " + ( "Off" if GPIO.input( heatPin ) else "[color=00ff00][b]On[/b][/color]" ) + "\n  " + \
+		       "Cool:      " + ( "Off" if GPIO.input( coolPin ) else "[color=00ff00][b]On[/b][/color]" ) + "\n  " + \
+		       "Fan:       " + ( "Auto" if GPIO.input( fanPin ) else "[color=00ff00][b]On[/b][/color]" ) + "\n  " + \
 			   "Sched:   " + sched
 
 
@@ -810,36 +813,36 @@ def change_system_settings():
 		fpin_start = str( GPIO.input( fanPin ) )
 
 		if heatControl.state == "down":
-			GPIO.output( coolPin, GPIO.LOW )
+			GPIO.output( coolPin, GPIO.HIGH )
 
 			if setTemp >= currentTemp + tempHysteresis:
-				GPIO.output( heatPin, GPIO.HIGH )
-				GPIO.output( fanPin, GPIO.HIGH )	
-			elif setTemp <= currentTemp:
 				GPIO.output( heatPin, GPIO.LOW )
-				if fanControl.state != "down" and not GPIO.input( coolPin ):
-					GPIO.output( fanPin, GPIO.LOW )			
+				GPIO.output( fanPin, GPIO.LOW )	
+			elif setTemp <= currentTemp:
+				GPIO.output( heatPin, GPIO.HIGH )
+				if fanControl.state != "down" and GPIO.input( coolPin ):
+					GPIO.output( fanPin, GPIO.HIGH )			
 		else:
-			GPIO.output( heatPin, GPIO.LOW )
+			GPIO.output( heatPin, GPIO.HIGH )
 
 			if coolControl.state == "down":
 				if setTemp <= currentTemp - tempHysteresis:
-					GPIO.output( coolPin, GPIO.HIGH )
-					GPIO.output( fanPin, GPIO.HIGH )
-				elif setTemp >= currentTemp:
 					GPIO.output( coolPin, GPIO.LOW )
-					if fanControl.state != "down" and not GPIO.input( heatPin ):
-						GPIO.output( fanPin, GPIO.LOW )					
+					GPIO.output( fanPin, GPIO.LOW )
+				elif setTemp >= currentTemp:
+					GPIO.output( coolPin, GPIO.HIGH )
+					if fanControl.state != "down" and GPIO.input( heatPin ):
+						GPIO.output( fanPin, GPIO.HIGH )					
 			else:
-				GPIO.output( coolPin, GPIO.LOW )
+				GPIO.output( coolPin, GPIO.HIGH )
 				if fanControl.state != "down" and not GPIO.input( heatPin ):
 					GPIO.output( fanPin, GPIO.LOW )
 
 		if fanControl.state == "down":
-			GPIO.output( fanPin, GPIO.HIGH )
+			GPIO.output( fanPin, GPIO.LOW )
 		else:
-			if not GPIO.input( heatPin ) and not GPIO.input( coolPin ):
-				GPIO.output( fanPin, GPIO.LOW )
+			if GPIO.input( heatPin ) and GPIO.input( coolPin ):
+				GPIO.output( fanPin, GPIO.HIGH )
 
 		# save the thermostat state in case of restart
 		state.put( "state",	setTemp=setTemp, 
@@ -881,7 +884,8 @@ def check_sensor_temp( dt ):
 		global tempSensor
 		
 		if tempSensor is not None:
-			rawTemp = tempSensor.get_temperature( sensorUnits )
+			rawTemp = tempSensor.read_temperature()
+			rawTemp = (rawTemp * 1.8) + 32
 			correctedTemp = ( ( ( rawTemp - freezingMeasured ) * referenceRange ) / measuredRange ) + freezingPoint
 			currentTemp = round( correctedTemp, 1 )
 			log( LOG_LEVEL_DEBUG, CHILD_DEVICE_TEMP, MSG_SUBTYPE_CUSTOM + "/raw", str( rawTemp ) )
