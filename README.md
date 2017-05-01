@@ -1,7 +1,7 @@
 # Raspberry Pi Thermostat Implementation
 
-Author: 	Andrzej Taramina
-Email:		andrzej at chaeron dot com
+Author: 	Gage Leighton previously Andrzej Taramina, Thank you so much, Andrzej!
+Email:		gageoleighton at gmail dot com
 License:	MIT
 
 **THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -11,7 +11,7 @@ SOFTWARE.**
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-This project is a fairly comprehensive implementation of a Thermostat for a Raspberry Pi, designed to run on the new 7" Touch Sensitive LCD screen. 
+This project is a fairly comprehensive implementation of a Thermostat for a Raspberry Pi, designed to run on the new 7" Touch Sensitive LCD screen. I am using this project as my default thermostat so updates will be infrequent and random, hopefully usefull.
 
 Key features include:
 
@@ -214,27 +214,21 @@ Thanks to [Jeff - The Nooganeer](http://www.nooganeer.com/his/category/projects/
 Thanks to [Adafruit - Temperature Sensing Tutorial](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing/hardware) for info on how to wire
 a DS18B20 temperature sensor into the Raspberry Pi.
  
-And finally, thanks to [Nich Fugal/Makeatronics](http://makeatronics.blogspot.com/2013/06/24v-ac-solid-state-relay-board.html) for his great 24V AC Solid State Relay Board.
+Thanks to [Nich Fugal/Makeatronics](http://makeatronics.blogspot.com/2013/06/24v-ac-solid-state-relay-board.html) for his great 24V AC Solid State Relay Board.
+
+Of course, the awesome dude **[Andrjez - Chaeron/thermostat](https://github.com/chaeron/thermostat)** for putting everything together so I can add on what little code I know!
 
 
 ##Additional Notes/Comments:
  
-1. Default temperatures are in degrees Celcius, a righteous metric scale. If you wish to configure the thermostat to use the Farenheit system, you will need to replace 
-   the .json config files with those in the resources/farenheit directory.
+1. Default temperatures are unfortunately in Farenheit. If you wish to configure the thermostat to use the Celcius system, you will need to replace 
+   the .json config files with the correct file **marked as celcius.**
 
-2. Future versions may include smart capabilities supporting remote wireless temperature sensors, log analysis, security/authentication and more. But don't hold your breath...
+2. Future versions may include smart capabilities supporting remote wireless temperature sensors (soon?), log analysis, security/authentication and more. But don't hold your breath...
 
-3. Feel free to hack the code, so long as you credit the source. It is assumed that if you do, you have some familiarity with programming, python, web coding and the like.
+3. Feel free to hack the code, so long as you credit the source. It is assumed that if you do, you have some familiarity with programming, python, web coding and the like. Again, thank you Andrzej!
 
 4. You are welcome to ask questions about the implementation and to offer suggestions to the author. 
 
+Happy Coding :)
 
-Enjoy!
-
-
-....Andrzej
-
-
-
-
-	
