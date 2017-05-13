@@ -20,7 +20,7 @@
         "tempStep": 1.0,
     },
     "remote": {
-	"remoreip" : 192.168.0.16,
+	"remoreip" : "192.168.0.16",
 	"temperature" : "temp",
 	"humidity" : "humidity"
     },
