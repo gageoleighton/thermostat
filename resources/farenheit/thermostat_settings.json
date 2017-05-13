@@ -17,7 +17,12 @@
         "minUITimeout": 60,
         "tempCheckInterval": 3,
         "tempHysteresis": 1.0,
-        "tempStep": 1.0
+        "tempStep": 1.0,
+    },
+    "remote": {
+	"remoreip" : 192.168.0.16,
+	"temperature" : "temp",
+	"humidity" : "humidity"
     },
     "pir": {
         "pirEnabled": 1,
