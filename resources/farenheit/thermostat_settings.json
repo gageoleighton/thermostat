@@ -23,7 +23,8 @@
     "remote": {
 	"remoteip" : "192.168.0.16",
 	"temperature" : "temp",
-	"humidity" : "humidity"
+	"humidity" : "humidity",
+	"remotediff" : 4.0
     },
     "pir": {
         "pirEnabled": 1,
