@@ -21,7 +21,7 @@
 	"fanstandby" : 60
     },
     "remote": {
-	"remoreip" : "192.168.0.16",
+	"remoteip" : "192.168.0.16",
 	"temperature" : "temp",
 	"humidity" : "humidity"
     },
