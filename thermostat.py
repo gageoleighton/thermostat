@@ -71,7 +71,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 
 import cherrypy
 import schedule
-
+import urllib3 as url3
 
 ##############################################################################
 #                                                                            #
@@ -403,6 +403,10 @@ minUIEnabled 	  = 0    if not( settings.exists( "thermostat" ) ) else settings.g
 minUITimeout 	  = 3    if not( settings.exists( "thermostat" ) ) else settings.get( "thermostat" )[ "minUITimeout" ]
 minUITimer		  = None
 
+remoteip	  = None	if not ( settings.exists( "remote" ) ) else settings.get( "remote" )[ "remoteip" ]
+remotediff	  = 4		if not ( settings.exists( "remote" ) ) else settings.get( "remote" )[ "remotediff" ]
+
+
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/tempScale", str( tempScale ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/scaleUnits", str( scaleUnits ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/precipUnits", str( precipUnits ), timestamp=False )
@@ -416,7 +420,7 @@ log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperat
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/tempCheckInterval", str( tempCheckInterval ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/minUIEnabled", str( minUIEnabled ), timestamp=False )
 log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/temperature/minUITimeout", str( minUITimeout ), timestamp=False )
-
+log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/settings/remote/remoteip", str( remoteip ), timestamp=False )
 
 # Temperature calibration settings:
 
@@ -839,7 +843,10 @@ def change_system_settings():
 					GPIO.output( fanPin, GPIO.LOW )
 
 		if fanControl.state == "down":
-			GPIO.output( fanPin, GPIO.LOW )
+			if (setTemp <= remotetemp + remotediff) or (setTemp >= remotetemp - remotediff)
+				GPIO.output( fanPin, GPIO.HIGH )
+			else:
+				GPIO.output( fanPin, GPIO.LOW )
 		else:
 			if GPIO.input( heatPin ) and GPIO.input( coolPin ):
 				GPIO.output( fanPin, GPIO.HIGH )
@@ -905,12 +912,25 @@ def check_sensor_temp( dt ):
 		timeLabel.text      = ( "[b]" + ( timeStr if timeStr[0:1] != "0" else timeStr[1:] ) + "[/b]" ).lower()
 		altTimeLabel.text  	= timeLabel.text
 
+		check_remote_temp( remoteip )
 		change_system_settings()
+	
+	
+# Check Remote Temp
 
+def check_remote_temp( ip ):
+	http = url3.PoolManager()
+	global remotetemp
+	try:
+		r = http.request('GET', ip + '/temp', timeout=1.0)
+		remotetemp = r.data
+	except url3.exceptions.NewConnectionError:
+		pass
 
+	
 # This is called when the desired temp slider is updated:
 
-def update_set_temp( slider, value ):
+def ( slider, value ):
 	with thermostatLock:
 		global setTemp
 		priorTemp = setTemp
