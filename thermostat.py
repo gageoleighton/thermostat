@@ -930,7 +930,7 @@ def check_remote_temp( ip ):
 	
 # This is called when the desired temp slider is updated:
 
-def ( slider, value ):
+def update_set_temp( slider, value ):
 	with thermostatLock:
 		global setTemp
 		priorTemp = setTemp
