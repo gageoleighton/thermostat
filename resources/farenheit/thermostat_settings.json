@@ -18,6 +18,7 @@
         "tempCheckInterval": 3,
         "tempHysteresis": 1.0,
         "tempStep": 1.0,
+	"fanstandby" : 60
     },
     "remote": {
 	"remoreip" : "192.168.0.16",
