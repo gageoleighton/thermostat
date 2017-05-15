@@ -126,7 +126,7 @@ class switch(object):
         """Return the match method once, then stop"""
         yield self.match
         raise StopIteration
-    
+
     def match(self, *args):
         """Indicate whether or not to enter a case suite"""
         if self.fall or not args:
@@ -243,10 +243,10 @@ def mqtt_on_connect( client, userdata, flags, rc ):
 
 		src = 	client.subscribe( [
 									( mqttSub_restart, 0 ), 	# Subscribe to restart commands
-									( mqttSub_loglevel, 0 ),	# Subscribe to log level commands 
-									( mqttSub_version, 0 )		# Subscribe to version commands 
+									( mqttSub_loglevel, 0 ),	# Subscribe to log level commands
+									( mqttSub_version, 0 )		# Subscribe to version commands
 								  ] )
-		
+
 		if src[ 0 ] == 0:
 			log( LOG_LEVEL_INFO, CHILD_DEVICE_MQTT, MSG_SUBTYPE_TEXT, "Subscribe Succeeded: " + mqttServer + ":" + str( mqttPort ) )
 		else:
@@ -264,7 +264,7 @@ if mqttAvailable:
 	mqttSub_version		= str( mqttPubPrefix + "/" + mqttClientID + "/command/version" )
 	mqttSub_restart		= str( mqttPubPrefix + "/" + mqttClientID + "/command/restart" )
 	mqttSub_loglevel	= str( mqttPubPrefix + "/" + mqttClientID + "/command/loglevel" )
-	
+
 else:
 	mqttEnabled    = False
 
@@ -308,18 +308,18 @@ def log_dummy( level, child_device, msg_subtype, msg, msg_type=MSG_TYPE_SET, tim
 def log_mqtt( level, child_device, msg_subtype, msg, msg_type=MSG_TYPE_SET, timestamp=True, single=False ):
 	if level >= logLevel:
 		ts = datetime.datetime.now().strftime( "%Y-%m-%dT%H:%M:%S%z " ) if LOG_ALWAYS_TIMESTAMP or timestamp else ""
-		topic = mqttPubPrefix + "/sensor/log/" + LOG_LEVELS_STR[ level ] + "/" + mqttClientID + "/" + child_device + "/" + msg_type + "/" + msg_subtype 
+		topic = mqttPubPrefix + "/sensor/log/" + LOG_LEVELS_STR[ level ] + "/" + mqttClientID + "/" + child_device + "/" + msg_type + "/" + msg_subtype
 		payload = ts + msg
 
 		if single:
 			publish.single( topic, payload, hostname=mqttServer, port=mqttPort, client_id=mqttClientID )
 		else:
 			mqttc.publish( topic, payload )
-		
+
 
 def log_file( level, child_device, msg_subtype, msg, msg_type=MSG_TYPE_SET, timestamp=True, single=False ):
 	if level >= logLevel:
-		ts = datetime.datetime.now().strftime( "%Y-%m-%dT%H:%M:%S%z " ) 
+		ts = datetime.datetime.now().strftime( "%Y-%m-%dT%H:%M:%S%z " )
 		logFile.write( ts + LOG_LEVELS_STR[ level ] + "/" + child_device + "/" + msg_type + "/" + msg_subtype + ": " + msg + "\n" )
 
 
@@ -340,7 +340,7 @@ for case in switch( loggingChannel ):
 		if mqttEnabled:
 			log = log_mqtt
 		else:
-			log = log_dummy	
+			log = log_dummy
 		break
 	if case( 'file' ):
 		log = log_file
@@ -350,7 +350,7 @@ for case in switch( loggingChannel ):
 		log = log_print
 		break
 	if case():		# default
-		log = log_dummy	
+		log = log_dummy
 
 logLevel = LOG_LEVELS.get( loggingLevel, LOG_LEVEL_NONE )
 
@@ -377,6 +377,7 @@ for i in range( len( CHILD_DEVICES ) ):
 	child = CHILD_DEVICES[ i ]
 	if child != CHILD_DEVICE_NODE:
 		log( LOG_LEVEL_STATE, child, child, "", msg_type=MSG_TYPE_PRESENTATION )
+
 
 # Various temperature settings:
 
@@ -514,7 +515,7 @@ controlColours = {
 					"Cool":   ( 0.0, 0.0, 1.0, 0.4 ),
 					"Heat":   ( 1.0, 0.0, 0.0, 1.0 ),
 					"Fan":    ( 0.0, 1.0, 0.0, 0.4 ),
-					"Hold":   ( 0.0, 1.0, 0.0, 0.4 ),					
+					"Hold":   ( 0.0, 1.0, 0.0, 0.4 ),
 				 }
 
 
@@ -525,34 +526,34 @@ def setControlState( control, state ):
 			control.background_color = controlColours[ "normal" ]
 		else:
 			control.background_color = controlColours[ control.text.replace( "[b]", "" ).replace( "[/b]", "" ) ]
-		
+
 		controlLabel = control.text.replace( "[b]", "" ).replace( "[/b]", "" ).lower()
 		log( LOG_LEVEL_STATE, controlLabel +  CHILD_DEVICE_SUFFIX_UICONTROL, MSG_SUBTYPE_BINARY_STATUS, "0" if state == "normal" else "1" )
 
 
-coolControl = ToggleButton( text="[b]Cool[/b]", 
-							markup=True, 
+coolControl = ToggleButton( text="[b]Cool[/b]",
+							markup=True,
 							size_hint = ( None, None )
 						  )
 
 setControlState( coolControl, "normal" if not( state.exists( "state" ) ) else state.get( "state" )[ "coolControl" ] )
 
-heatControl = ToggleButton( text="[b]Heat[/b]", 
-							markup=True, 
+heatControl = ToggleButton( text="[b]Heat[/b]",
+							markup=True,
 							size_hint = ( None, None )
 						  )
 
 setControlState( heatControl, "normal" if not( state.exists( "state" ) ) else state.get( "state" )[ "heatControl" ] )
 
-fanControl  = ToggleButton( text="[b]Fan[/b]", 
-							markup=True, 
+fanControl  = ToggleButton( text="[b]Fan[/b]",
+							markup=True,
 							size_hint = ( None, None )
 						  )
 
 setControlState( fanControl, "normal" if not( state.exists( "state" ) ) else state.get( "state" )[ "fanControl" ] )
 
-holdControl = ToggleButton( text="[b]Hold[/b]", 
-							markup=True, 
+holdControl = ToggleButton( text="[b]Hold[/b]",
+							markup=True,
 							size_hint = ( None, None )
 						  )
 
@@ -572,7 +573,7 @@ def get_status_string():
 			sched = "Heat"
 		elif coolControl.state == "down":
 			sched = "Cool"
-	
+
 		return "[b]System:[/b]\n  " + \
 			   "Heat:     " + ( "Off" if GPIO.input( heatPin ) else "[color=00ff00][b]On[/b][/color]" ) + "\n  " + \
 		       "Cool:      " + ( "Off" if GPIO.input( coolPin ) else "[color=00ff00][b]On[/b][/color]" ) + "\n  " + \
@@ -612,9 +613,9 @@ weatherURLCurrent 	 = weatherURLBase + "weather?units=" + tempScale + "&q=" + we
 weatherURLForecast 	 = weatherURLBase + "forecast/daily?units=" + tempScale + "&q=" + weatherLocation + "&APPID=" + weatherAppKey
 weatherURLTimeout 	 = settings.get( "weather" )[ "URLtimeout" ]
 
-weatherRefreshInterval   = settings.get( "weather" )[ "weatherRefreshInterval" ] * 60  
-forecastRefreshInterval  = settings.get( "weather" )[ "forecastRefreshInterval" ] * 60  
-weatherExceptionInterval = settings.get( "weather" )[ "weatherExceptionInterval" ] * 60  
+weatherRefreshInterval   = settings.get( "weather" )[ "weatherRefreshInterval" ] * 60
+forecastRefreshInterval  = settings.get( "weather" )[ "forecastRefreshInterval" ] * 60
+weatherExceptionInterval = settings.get( "weather" )[ "weatherExceptionInterval" ] * 60
 
 weatherSummaryLabel  = Label( text="", size_hint = ( None, None ), font_size='20sp', markup=True, text_size=( 200, 20 ) )
 weatherDetailsLabel  = Label( text="", size_hint = ( None, None ), font_size='20sp', markup=True, text_size=( 300, 150 ), valign="top" )
@@ -644,8 +645,8 @@ def display_current_weather( dt ):
 		try:
 			weather = get_weather( weatherURLCurrent )
 
-			weatherImg.source = "web/images/" + weather[ "weather" ][ 0 ][ "icon" ] + ".png" 
-	
+			weatherImg.source = "web/images/" + weather[ "weather" ][ 0 ][ "icon" ] + ".png"
+
 			weatherSummaryLabel.text = "[b]" + weather[ "weather" ][ 0 ][ "description" ].title() + "[/b]"
 
 			weatherDetailsLabel.text = "\n".join( (
@@ -656,7 +657,7 @@ def display_current_weather( dt ):
 				"Sun:           " + time.strftime("%H:%M", time.localtime( weather[ "sys" ][ "sunrise" ] ) ) + " am, " + time.strftime("%I:%M", time.localtime( weather[ "sys" ][ "sunset" ] ) ) + " pm"
 			) )
 
-			
+
 			log( LOG_LEVEL_INFO, CHILD_DEVICE_WEATHER_CURR, MSG_SUBTYPE_TEXT, weather[ "weather" ][ 0 ][ "description" ].title() + "; " + re.sub( '\n', "; ", re.sub( ' +', ' ', weatherDetailsLabel.text ).strip() ) )
 
 		except:
@@ -690,10 +691,10 @@ def display_forecast_weather( dt ):
 			today    = forecast[ "list" ][ 0 ]
 			tomo     = forecast[ "list" ][ 1 ]
 
-			forecastTodayImg.source = "web/images/" + today[ "weather" ][ 0 ][ "icon" ] + ".png" 
+			forecastTodayImg.source = "web/images/" + today[ "weather" ][ 0 ][ "icon" ] + ".png"
 
-			forecastTodaySummaryLabel.text = "[b]" + today[ "weather" ][ 0 ][ "description" ].title() + "[/b]"		
-	
+			forecastTodaySummaryLabel.text = "[b]" + today[ "weather" ][ 0 ][ "description" ].title() + "[/b]"
+
 			todayText = "\n".join( (
 				"High:         " + str( int( round( today[ "temp" ][ "max" ], 0 ) ) ) + scaleUnits + ", Low: " + str( int( round( today[ "temp" ][ "min" ], 0 ) ) ) + scaleUnits,
 				"Humidity: " + str( today[ "humidity" ] ) + "%",
@@ -704,7 +705,7 @@ def display_forecast_weather( dt ):
 			if "rain" in today or "snow" in today:
 				todayText += "\n"
 				if "rain" in today:
-					todayText += "Rain:         " + get_precip_amount( today[ "rain" ] ) + precipUnits   
+					todayText += "Rain:         " + get_precip_amount( today[ "rain" ] ) + precipUnits
 					if "snow" in today:
 						todayText += ", Snow: " + get_precip_amount( today[ "snow" ] ) + precipUnits
 				else:
@@ -712,10 +713,10 @@ def display_forecast_weather( dt ):
 
 			forecastTodayDetailsLabel.text = todayText;
 
-			forecastTomoImg.source = "web/images/" + tomo[ "weather" ][ 0 ][ "icon" ] + ".png" 
+			forecastTomoImg.source = "web/images/" + tomo[ "weather" ][ 0 ][ "icon" ] + ".png"
 
-			forecastTomoSummaryLabel.text = "[b]" + tomo[ "weather" ][ 0 ][ "description" ].title() + "[/b]"		
-	
+			forecastTomoSummaryLabel.text = "[b]" + tomo[ "weather" ][ 0 ][ "description" ].title() + "[/b]"
+
 			tomoText = "\n".join( (
 				"High:         " + str( int( round( tomo[ "temp" ][ "max" ], 0 ) ) ) + scaleUnits + ", Low: " + str( int( round( tomo[ "temp" ][ "min" ], 0 ) ) ) + scaleUnits,
 				"Humidity: " + str( tomo[ "humidity" ] ) + "%",
@@ -763,7 +764,7 @@ def get_ip_address():
 	s.settimeout( 10 )   # 10 seconds
 	try:
 		s.connect( ( "8.8.8.8", 80 ) )    # Google DNS server
-		ip = s.getsockname()[0] 
+		ip = s.getsockname()[0]
 		log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM +"/settings/ip", ip, timestamp=False )
 	except socket.error:
 		ip = "127.0.0.1"
@@ -777,7 +778,7 @@ def getVersion():
 
 
 def restart():
-	log( LOG_LEVEL_STATE, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/restart", "Thermostat restarting...", single=True ) 
+	log( LOG_LEVEL_STATE, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/restart", "Thermostat restarting...", single=True )
 	GPIO.cleanup()
 
 	if logFile is not None:
@@ -785,7 +786,7 @@ def restart():
 		os.fsync( logFile.fileno() )
 		logFile.close()
 
-	if mqttEnabled:	
+	if mqttEnabled:
 		mqttc.disconnect()
 
 	os.execl( sys.executable, 'python', __file__, *sys.argv[1:] )	# This does not return!!!
@@ -795,11 +796,11 @@ def setLogLevel( msg ):
 	global logLevel
 
 	if LOG_LEVELS.get( msg.payload ):
-		log( LOG_LEVEL_STATE, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/loglevel", "LogLevel set to: " + msg.payload ) 
+		log( LOG_LEVEL_STATE, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/loglevel", "LogLevel set to: " + msg.payload )
 
 		logLevel = LOG_LEVELS.get( msg.payload, logLevel )
 	else:
-		log( LOG_LEVEL_ERROR, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/loglevel", "Invalid LogLevel: " + msg.payload ) 
+		log( LOG_LEVEL_ERROR, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/loglevel", "Invalid LogLevel: " + msg.payload )
 
 
 ##############################################################################
@@ -821,11 +822,11 @@ def change_system_settings():
 
 			if setTemp >= currentTemp + tempHysteresis:
 				GPIO.output( heatPin, GPIO.LOW )
-				GPIO.output( fanPin, GPIO.LOW )	
+				GPIO.output( fanPin, GPIO.LOW )
 			elif setTemp <= currentTemp:
 				GPIO.output( heatPin, GPIO.HIGH )
 				if fanControl.state != "down" and GPIO.input( coolPin ):
-					GPIO.output( fanPin, GPIO.HIGH )			
+					GPIO.output( fanPin, GPIO.HIGH )
 		else:
 			GPIO.output( heatPin, GPIO.HIGH )
 
@@ -836,23 +837,22 @@ def change_system_settings():
 				elif setTemp >= currentTemp:
 					GPIO.output( coolPin, GPIO.HIGH )
 					if fanControl.state != "down" and GPIO.input( heatPin ):
-						GPIO.output( fanPin, GPIO.HIGH )					
+						GPIO.output( fanPin, GPIO.HIGH )
 			else:
 				GPIO.output( coolPin, GPIO.HIGH )
 				if fanControl.state != "down" and not GPIO.input( heatPin ):
 					GPIO.output( fanPin, GPIO.LOW )
 
 		if fanControl.state == "down":
-			if (setTemp <= remotetemp + remotediff) or (setTemp >= remotetemp - remotediff):
-				GPIO.output( fanPin, GPIO.HIGH )
-			else:
-				GPIO.output( fanPin, GPIO.LOW )
+			GPIO.output( fanPin, GPIO.LOW )
 		else:
-			if GPIO.input( heatPin ) and GPIO.input( coolPin ):
+			if (currentTemp >= remotetemp - remotediff) or (currentTemp <= remotetemp + remotediff):
+				GPIO.output( fanPin, GPIO.LOW )
+			elif GPIO.input( heatPin ) and GPIO.input( coolPin ):
 				GPIO.output( fanPin, GPIO.HIGH )
 
 		# save the thermostat state in case of restart
-		state.put( "state",	setTemp=setTemp, 
+		state.put( "state",	setTemp=setTemp,
 					  		heatControl=heatControl.state, coolControl=coolControl.state, fanControl=fanControl.state, holdControl=holdControl.state
 		)
 
@@ -876,12 +876,12 @@ def control_callback( control ):
 			if control.state == "down":
 				setControlState( heatControl, "normal" )
 			reloadSchedule()
-			
+
 		if control is heatControl:
 			if control.state == "down":
-				setControlState( coolControl, "normal" )	
-			reloadSchedule()						
-		
+				setControlState( coolControl, "normal" )
+			reloadSchedule()
+
 
 # Check the current sensor temperature
 
@@ -889,7 +889,7 @@ def check_sensor_temp( dt ):
 	with thermostatLock:
 		global currentTemp, priorCorrected
 		global tempSensor
-		
+
 		if tempSensor is not None:
 			rawTemp = tempSensor.get_temperature( sensorUnits ) # tempSensor.read_temperature()
 			# rawTemp = (rawTemp * 1.8) + 32
@@ -899,8 +899,8 @@ def check_sensor_temp( dt ):
 			log( LOG_LEVEL_DEBUG, CHILD_DEVICE_TEMP, MSG_SUBTYPE_CUSTOM + "/corrected", str( correctedTemp ) )
 
 			if abs( priorCorrected - correctedTemp ) >= TEMP_TOLERANCE:
-				log( LOG_LEVEL_STATE, CHILD_DEVICE_TEMP, MSG_SUBTYPE_TEMPERATURE, str( currentTemp ) )	
-				priorCorrected = correctedTemp	
+				log( LOG_LEVEL_STATE, CHILD_DEVICE_TEMP, MSG_SUBTYPE_TEMPERATURE, str( currentTemp ) )
+				priorCorrected = correctedTemp
 
 		currentLabel.text = "[b]" + str( currentTemp ) + scaleUnits + "[/b]"
 		altCurLabel.text  = currentLabel.text
@@ -914,8 +914,8 @@ def check_sensor_temp( dt ):
 
 		check_remote_temp( remoteip )
 		change_system_settings()
-	
-	
+
+
 # Check Remote Temp
 
 def check_remote_temp( ip ):
@@ -923,11 +923,12 @@ def check_remote_temp( ip ):
 	global remotetemp
 	try:
 		r = http.request('GET', ip + '/temp', timeout=1.0)
-		remotetemp = r.data
-	except url3.exceptions.NewConnectionError:
-		pass
+		remotetemp = float(r.data)
+	except:
+		remotetemp = setTemp
+		#log( LOG_LEVEL_INFO, CHILD_DEVICE_NODE, MSG_SUBTYPE_CUSTOM + "/check_remote_temp/remotetemp", str( remotetemp ), timestamp=False )
 
-	
+
 # This is called when the desired temp slider is updated:
 
 def update_set_temp( slider, value ):
@@ -946,17 +947,17 @@ def check_pir( pin ):
 	global minUITimer
 
 	with thermostatLock:
-		if GPIO.input( pirPin ): 
+		if GPIO.input( pirPin ):
 			log( LOG_LEVEL_INFO, CHILD_DEVICE_PIR, MSG_SUBTYPE_TRIPPED, "1" )
 
 			if minUITimer != None:
 				  Clock.unschedule( show_minimal_ui )
 
-			minUITimer = Clock.schedule_once( show_minimal_ui, minUITimeout ) 
+			minUITimer = Clock.schedule_once( show_minimal_ui, minUITimeout )
 
 			ignore = False
 			now = datetime.datetime.now().time()
-			
+
 			if pirIgnoreFrom > pirIgnoreTo:
 				if now >= pirIgnoreFrom or now < pirIgnoreTo:
 					ignore = True
@@ -967,7 +968,7 @@ def check_pir( pin ):
 			if screenMgr.current == "minimalUI" and not( ignore ):
 				screenMgr.current = "thermostatUI"
 				log( LOG_LEVEL_DEBUG, CHILD_DEVICE_SCREEN, MSG_SUBTYPE_TEXT, "Full" )
-	
+
 		else:
 			log( LOG_LEVEL_DEBUG, CHILD_DEVICE_PIR, MSG_SUBTYPE_TRIPPED, "0" )
 
@@ -1020,11 +1021,11 @@ class ThermostatApp( App ):
 			self.rect = Rectangle( size=( 800, 480 ), pos=thermostatUI.pos )
 
 		# Create the rest of the UI objects ( and bind them to callbacks, if necessary ):
-		
+
 		wimg = Image( source='web/images/logo.png' )
-		
-		coolControl.bind( on_press=control_callback )		
-		heatControl.bind( on_press=control_callback )	
+
+		coolControl.bind( on_press=control_callback )
+		heatControl.bind( on_press=control_callback )
 		fanControl.bind( on_press=control_callback )
 		holdControl.bind( on_press=control_callback )
 
@@ -1067,7 +1068,7 @@ class ThermostatApp( App ):
 		versionLabel.pos = ( 320, 0 )
 
 		forecastTodayHeading = Label( text="[b]Today[/b]:", font_size='20sp', markup=True, size_hint = ( None, None ), pos = ( 0, 290 ) )
-		
+
 		forecastTodayImg.pos = ( 0, 260 )
 		forecastTodaySummaryLabel.pos = ( 100, 260 )
 		forecastTodayDetailsLabel.pos = ( 80, 167 )
@@ -1177,7 +1178,7 @@ def setScheduledTemp( temp ):
 def getTestSchedule():
 	days = [ "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" ]
 	testSched = {}
-	
+
 	for i in range( len( days ) ):
 		tempList = []
 		for minute in range( 60 * 24 ):
@@ -1200,20 +1201,20 @@ def reloadSchedule():
 
 		with thermostatLock:
 			thermoSched = JsonStore( "thermostat_schedule.json" )
-	
+
 			if holdControl.state != "down":
 				if heatControl.state == "down":
-					activeSched = thermoSched[ "heat" ]  
+					activeSched = thermoSched[ "heat" ]
 					log( LOG_LEVEL_INFO, CHILD_DEVICE_SCHEDULER, MSG_SUBTYPE_CUSTOM + "/load", "heat" )
 				elif coolControl.state == "down":
-					activeSched = thermoSched[ "cool" ]  
+					activeSched = thermoSched[ "cool" ]
 					log( LOG_LEVEL_INFO, CHILD_DEVICE_SCHEDULER, MSG_SUBTYPE_CUSTOM + "/load", "cool" )
 
-				if useTestSchedule: 
+				if useTestSchedule:
 					activeSched = getTestSchedule()
 					log( LOG_LEVEL_INFO, CHILD_DEVICE_SCHEDULER, MSG_SUBTYPE_CUSTOM + "/load", "test" )
 					print "Using Test Schedule!!!"
-	
+
 		if activeSched != None:
 			for day, entries in activeSched.iteritems():
 				for i, entry in enumerate( entries ):
@@ -1230,15 +1231,15 @@ def reloadSchedule():
 class WebInterface( object ):
 
 	@cherrypy.expose
-	def index( self ):	
-		log( LOG_LEVEL_INFO, CHILD_DEVICE_WEBSERVER, MSG_SUBTYPE_TEXT, "Served thermostat.html to: " + cherrypy.request.remote.ip )	
+	def index( self ):
+		log( LOG_LEVEL_INFO, CHILD_DEVICE_WEBSERVER, MSG_SUBTYPE_TEXT, "Served thermostat.html to: " + cherrypy.request.remote.ip )
 		file = open( "web/html/thermostat.html", "r" )
 
 		html = file.read()
 
 		file.close()
 
-		with thermostatLock:		
+		with thermostatLock:
 
 			html = html.replace( "@@version@@", str( THERMOSTAT_VERSION ) )
 			html = html.replace( "@@temp@@", str( setTemp ) )
@@ -1247,17 +1248,17 @@ class WebInterface( object ):
 			html = html.replace( "@@maxTemp@@", str( maxTemp ) )
 			html = html.replace( "@@tempStep@@", str( tempStep ) )
 
-		
+
 			status = statusLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ).replace( "\n", "<br>" ).replace( " ", "&nbsp;" )
-			status = status.replace( "[color=00ff00]", '<font color="red">' ).replace( "[/color]", '</font>' ) 
-	
+			status = status.replace( "[color=00ff00]", '<font color="red">' ).replace( "[/color]", '</font>' )
+
 			html = html.replace( "@@status@@", status )
 			html = html.replace( "@@dt@@", dateLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ) + ", " + timeLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ) )
 			html = html.replace( "@@heatChecked@@", "checked" if heatControl.state == "down" else "" )
 			html = html.replace( "@@coolChecked@@", "checked" if coolControl.state == "down" else "" )
 			html = html.replace( "@@fanChecked@@", "checked" if fanControl.state == "down" else "" )
 			html = html.replace( "@@holdChecked@@", "checked" if holdControl.state == "down" else "" )
-	
+
 		return html
 
 
@@ -1269,7 +1270,7 @@ class WebInterface( object ):
 		global coolControl
 		global fanControl
 
-		log( LOG_LEVEL_INFO, CHILD_DEVICE_WEBSERVER, MSG_SUBTYPE_TEXT, "Set thermostat received from: " + cherrypy.request.remote.ip )	
+		log( LOG_LEVEL_INFO, CHILD_DEVICE_WEBSERVER, MSG_SUBTYPE_TEXT, "Set thermostat received from: " + cherrypy.request.remote.ip )
 
 		tempChanged = setTemp != float( temp )
 
@@ -1308,7 +1309,7 @@ class WebInterface( object ):
 		html = file.read()
 
 		file.close()
-		
+
 		with thermostatLock:
 			html = html.replace( "@@version@@", str( THERMOSTAT_VERSION ) )
 			html = html.replace( "@@dt@@", dateLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ) + ", " + timeLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ) )
@@ -1322,35 +1323,35 @@ class WebInterface( object ):
 
 
 	@cherrypy.expose
-	def schedule( self ):	
-		log( LOG_LEVEL_INFO, CHILD_DEVICE_WEBSERVER, MSG_SUBTYPE_TEXT, "Served thermostat_schedule.html to: " + cherrypy.request.remote.ip )			
+	def schedule( self ):
+		log( LOG_LEVEL_INFO, CHILD_DEVICE_WEBSERVER, MSG_SUBTYPE_TEXT, "Served thermostat_schedule.html to: " + cherrypy.request.remote.ip )
 		file = open( "web/html/thermostat_schedule.html", "r" )
 
 		html = file.read()
 
 		file.close()
-		
+
 		with thermostatLock:
 			html = html.replace( "@@version@@", str( THERMOSTAT_VERSION ) )
 			html = html.replace( "@@minTemp@@", str( minTemp ) )
 			html = html.replace( "@@maxTemp@@", str( maxTemp ) )
 			html = html.replace( "@@tempStep@@", str( tempStep ) )
-		
+
 			html = html.replace( "@@dt@@", dateLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ) + ", " + timeLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ) )
-	
+
 		return html
 
 	@cherrypy.expose
 	@cherrypy.tools.json_in()
 	def save( self ):
-		log( LOG_LEVEL_STATE, CHILD_DEVICE_WEBSERVER, MSG_SUBTYPE_TEXT, "Set schedule received from: " + cherrypy.request.remote.ip )	
+		log( LOG_LEVEL_STATE, CHILD_DEVICE_WEBSERVER, MSG_SUBTYPE_TEXT, "Set schedule received from: " + cherrypy.request.remote.ip )
 		schedule = cherrypy.request.json
 
 		with scheduleLock:
 			file = open( "thermostat_schedule.json", "w" )
 
 			file.write( json.dumps( schedule, indent = 4 ) )
-		
+
 			file.close()
 
 		reloadSchedule()
@@ -1360,15 +1361,15 @@ class WebInterface( object ):
 		html = file.read()
 
 		file.close()
-		
+
 		with thermostatLock:
 			html = html.replace( "@@version@@", str( THERMOSTAT_VERSION ) )
 			html = html.replace( "@@dt@@", dateLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ) + ", " + timeLabel.text.replace( "[b]", "<b>" ).replace( "[/b]", "</b>" ) )
-		
+
 		return html
 
 
-def startWebServer():	
+def startWebServer():
 	host = "discover" if not( settings.exists( "web" ) ) else settings.get( "web" )[ "host" ]
 	cherrypy.server.socket_host = host if host != "discover" else get_ip_address()								# use machine IP address if host = "discover"
 	cherrypy.server.socket_port = 80 if not( settings.exists( "web" ) ) else settings.get( "web" )[ "port" ]
@@ -1410,7 +1411,7 @@ def startWebServer():
 		}
 	)
 
-	cherrypy.quickstart ( WebInterface(), '/', conf )	
+	cherrypy.quickstart ( WebInterface(), '/', conf )
 
 
 ##############################################################################
@@ -1447,7 +1448,6 @@ if __name__ == '__main__':
 			os.fsync( logFile.fileno() )
 			logFile.close()
 
-		if mqttEnabled:	
+		if mqttEnabled:
 			mqttc.loop_stop()
 			mqttc.disconnect()
-
