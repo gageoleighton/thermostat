@@ -843,7 +843,7 @@ def change_system_settings():
 					GPIO.output( fanPin, GPIO.LOW )
 
 		if fanControl.state == "down":
-			if (setTemp <= remotetemp + remotediff) or (setTemp >= remotetemp - remotediff)
+			if (setTemp <= remotetemp + remotediff) or (setTemp >= remotetemp - remotediff):
 				GPIO.output( fanPin, GPIO.HIGH )
 			else:
 				GPIO.output( fanPin, GPIO.LOW )
